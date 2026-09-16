@@ -1,6 +1,50 @@
+import os
+import tempfile
+
 import streamlit as st
 import pandas as pd
+import lasio
 import plotly.graph_objects as go
+
+
+def load_uploaded_file(uploaded_file):
+    """Load CSV or LAS well-log file into a pandas DataFrame."""
+
+    filename = uploaded_file.name.lower()
+
+    if filename.endswith(".csv"):
+        return pd.read_csv(uploaded_file)
+
+    if filename.endswith(".las"):
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".las"
+        ) as temp_file:
+            temp_file.write(uploaded_file.getvalue())
+            temp_path = temp_file.name
+
+        try:
+            las = lasio.read(temp_path)
+            df = las.df().reset_index()
+
+            if "DEPT" in df.columns:
+                df = df.rename(columns={"DEPT": "DEPTH"})
+
+            return df
+
+        finally:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
+    raise ValueError(
+        "Unsupported file format. Please upload a CSV or LAS file."
+    )
+
+
+st.set_page_config(
+    page_title="GeoAI Copilot",
+    layout="wide",
+)
 from plotly.subplots import make_subplots
 
 from geoai_copilot.data import load_well_csv, qc_summary
@@ -25,9 +69,10 @@ with st.sidebar:
     st.header("Workflow")
 
     uploaded = st.file_uploader(
-        "Upload well-log CSV",
-        type=["csv"],
-    )
+        "Upload Well-Log Data",
+        type=["csv", "las"],
+        help="Upload a CSV or LAS well-log file.",
+)
 
 
 # ---------------------------------------------------------
@@ -61,7 +106,7 @@ if uploaded is None:
 # ---------------------------------------------------------
 # LOAD DATA
 # ---------------------------------------------------------
-df = pd.read_csv(uploaded)
+df = load_uploaded_file(uploaded)
 
 
 # ---------------------------------------------------------
