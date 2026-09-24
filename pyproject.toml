@@ -7,7 +7,7 @@ name = "geoai-copilot"
 version = "0.1.0"
 description = "AI-assisted geoscience and petrophysics copilot"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<4"
 license = {text = "MIT"}
 authors = [{name = "Ali Raza Shah"}]
 dependencies = [
