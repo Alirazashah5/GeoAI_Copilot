@@ -23,6 +23,7 @@ dependencies = [
   "httpx>=0.27,<1",
   "plotly>=6.0.0,<7",
   "lasio>=0.31,<1",
+  "reportlab>=4.0,<5",
 ]
 
 [project.optional-dependencies]
