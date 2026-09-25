@@ -8015,7 +8015,6 @@ elif page == "📑 Report":
             "uploaded_file_name",
             "Current dataset",
         )
-
         # -------------------------------------------------
         # WELL DETECTION
         # -------------------------------------------------
@@ -8027,6 +8026,11 @@ elif page == "📑 Report":
                     "WELL",
                     "Well",
                     "well",
+                    "WELL_NAME",
+                    "Well_Name",
+                    "well_name",
+                    "WELLNAME",
+                    "WellName",
                 ]
                 if column in df.columns
             ),
@@ -8976,10 +8980,19 @@ elif page == "📑 Report":
 
             plot_df = df.copy()
 
-            if well_column is not None:
+            # Use well information only if the detected well column
+            # still exists in the current plotting dataframe.
+            current_well_column = (
+                well_column
+                if well_column is not None
+                and well_column in plot_df.columns
+                else None
+            )
+
+            if current_well_column is not None:
 
                 available_wells = (
-                    plot_df[well_column]
+                    plot_df[current_well_column]
                     .dropna()
                     .astype(str)
                     .str.strip()
@@ -9000,7 +9013,7 @@ elif page == "📑 Report":
                     )
 
                     plot_df = plot_df[
-                        plot_df[well_column]
+                        plot_df[current_well_column]
                         .astype(str)
                         .str.strip()
                         == selected_well
