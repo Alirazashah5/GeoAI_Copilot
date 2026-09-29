@@ -78,7 +78,9 @@ streamlit run app/streamlit_app.py
 API:
 
 ```powershell
-uvicorn geoai_copilot.api:app --reload --port 8000
+import os
+
+api_key = os.getenv("OPENAI_API_KEY")
 ```
 
 Open:
